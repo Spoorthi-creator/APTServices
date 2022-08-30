@@ -1,0 +1,281 @@
+<html>
+
+<head>
+    <title>APT- Keeping apartments in good shape!</title>
+    <link rel="stylesheet" href="style.css">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script src="jquery-2.1.4.js"></script>
+</head>
+
+<body background="house.jpeg">
+    <div id="heading">We take care of the services needed for your Apartments
+
+    </div>
+    <div style="float: right;">
+        <input type="submit" id="aboutUs" value="About us" class="btn btn-success" data-toggle="modal"
+            data-target="#myModal"></input>
+        <input type="submit" id="contactUs" value="Contact us" class="btn btn-success" data-toggle="modal"
+            data-target="#myContactModal"></input>
+    </div>
+    <br>
+    <br>
+
+    <form id="login-box" class="container">
+
+        <div class="left">
+            <h1 id='status'>Sign up</h1>
+            <input type="text" id="username" name="username" placeholder="Username" />
+            <input type="text" id="email" name="email" placeholder="E-mail" />
+            <input type="password" id="password" name="password" placeholder="Password" required />
+            <input type="checkbox" onclick="myFunctionCheck()"
+                style="font-family:'Roboto', sans-serif ;font-weight: 500;">Show Password
+            <input type="submit" id='signUp' name="signUp" value="Sign up" />
+
+        </div>
+
+        <div class="right">
+
+            <h1 id='status'>Existing users</h1>
+            <input type="text" id="username1" name="username1" placeholder="Username" />
+            <input type="text" id="email1" name="email1" placeholder="E-mail" />
+            <input type="password" id="password1" name="password1" placeholder="Password" required />
+            <input type="checkbox" onclick="myFunction()"
+                style="font-family:'Roboto', sans-serif ;font-weight: 500;">Show Password
+            <input type="submit" id='login' name="login" value="Login" />
+            <br>
+            <input type="submit" id="resetPassword" value="Reset Password" data-toggle="modal"
+                data-target="#myModalReset" style="width: fit-content;"></input>
+
+        </div>
+        <div class="or">OR</div>
+
+    </form>
+
+    <!-- Modal for About -->
+    <div class="modal fade" id="myModal" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">About Us</h4>
+                    <img src="about.png" style="float: left; height:100px; width:100px;">
+                </div>
+                <div class="modal-body">
+                    <p style="text-align:justify; font-size:20px;">We at APT provide a wholesome check necessary for
+                        your
+                        apartment. Say Lift maintainance, Overhead watertank cleaning,painting, plumbing, carpentry
+                        services.. do not worry, its all on us. Register with us and forget all the follow ups that is
+                        on the Apartment's committiee's shoulder to get a job done.And so,our moto is to provide end-end
+                        services for your Apartment's maintainance .</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- Modal for Reset -->
+    <div class="modal fade" id="myModalReset" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal Reset Content -->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Reset Password</h4>
+                </div>
+                <div class="modal-body">
+                    <input type="text" placeholder="Email id" id="mail">
+                    <input type="submit" id="reset" value="Submit" />
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+
+    <!-- Modal for Contact -->
+    <div class="modal fade" id="myContactModal" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Contact us</h4>
+                </div>
+                <div class="modal-body">
+                    <img src="phone.png">
+                    98888888889
+                    <br>
+                    <br>
+                    <img src="email.png">
+                    abc@gmail.com
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+
+<script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.9.3/firebase-app.js";
+    import { getDatabase, set, ref, update } from "https://www.gstatic.com/firebasejs/9.9.3/firebase-database.js";
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/9.9.3/firebase-auth.js";
+    // TODO: Add SDKs for Firebase products that you want to use
+    // https://firebase.google.com/docs/web/setup#available-libraries
+
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyByzUT0x6GNkCD9ESwBpFixcqTZR3-ugAQ",
+        authDomain: "apt-services-525c7.firebaseapp.com",
+        databaseURL: "https://apt-services-525c7-default-rtdb.firebaseio.com",
+        projectId: "apt-services-525c7",
+        storageBucket: "apt-services-525c7.appspot.com",
+        messagingSenderId: "738290879254",
+        appId: "1:738290879254:web:af09cb88c4feec4ecc1e37"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
+    const auth = getAuth();
+
+    signUp.addEventListener('click', (e) => {
+        var email = document.getElementById('email').value;
+        var password = document.getElementById('password').value;
+        var username = document.getElementById('username').value;
+
+        if (email != "" && password != "" && username != "") {
+
+
+
+            createUserWithEmailAndPassword(auth, email, password)
+                .then((userCredential) => {
+                    // Signed in 
+                    const user = userCredential.user;
+
+                    set(ref(database, 'users/' + user.uid), {
+                        username: username,
+                        email: email
+                    })
+
+                    alert('Welcome, You are now our customer!');
+                    // page redirection could be done here.
+                    window.location = 'services.html';
+                })
+                .catch((error) => {
+                    //const errorCode = error.code;
+                    const errorMessage = error.message;
+
+                    alert(errorMessage);
+                    // ..
+                });
+
+        }
+        else {
+            alert("Please fill in all the details");
+        }
+
+    });
+
+    login.addEventListener('click', (e) => {
+        var email = document.getElementById('email1').value;
+        var password = document.getElementById('password1').value;
+        var username = document.getElementById('username1').value;
+
+        if (email != "" && password != "" && username != "") {
+
+            signInWithEmailAndPassword(auth, email, password)
+                .then((userCredential) => {
+                    // Signed in 
+                    const user = userCredential.user;
+
+                    const dt = new Date();
+                    update(ref(database, 'users/' + user.uid), {
+                        last_login: dt,
+                        username: username,
+                        email: email
+                    })
+
+                    alert('Great, welcome to APT !');
+                    window.location = 'services.html';
+                    // ...
+                })
+
+                .catch((error) => {
+                    //const errorCode = error.code;
+                    const errorMessage = error.message;
+
+                    alert(errorMessage);
+                });
+        }
+        else {
+            alert("Please fill in all the details");
+        }
+
+
+    });
+
+    reset.addEventListener('click', (e) => {
+        var emailForReset = document.getElementById('mail').value;
+        console.log(emailForReset);
+        if (emailForReset != "") {
+            document.getElementById('mail').value = "";
+            var atposition = emailForReset.indexOf("@");
+            var dotposition = emailForReset.lastIndexOf(".");
+            if (atposition < 1 || dotposition < atposition + 2 || dotposition + 2 >= emailForReset.length) {
+                alert("Please enter a valid email id");
+            }
+            else {
+                sendPasswordResetEmail(auth, emailForReset).then(() => {
+
+                    alert("Email sent to you.Please check and reset");
+                })
+
+                    .catch((error) => {
+                        //const errorCode = error.code;
+                        const errorMessage = error.message;
+                    });
+            }
+        }
+        else {
+            alert("Please provide the email id");
+        }
+
+
+    });
+    //To know the current location
+    const successCallback = (position) => {
+        console.log(position);
+    };
+
+    const errorCallback = (error) => {
+        console.log(error);
+    };
+
+    navigator.geolocation.getCurrentPosition(successCallback, errorCallback);
+
+
+</script>
+<script src="main.js"></script>
+
+</html>

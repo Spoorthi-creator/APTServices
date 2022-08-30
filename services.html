@@ -1,0 +1,247 @@
+<html>
+
+<head>
+    <title>Service Page</title>
+    <link rel="stylesheet" href="style.css">
+    <meta charset="utf-8" content="application/javascript">
+    <script src="https://www.gstatic.com/firebasejs/7.15.5/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.15.5/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.15.5/firebase-database.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script src="jquery-2.1.4.js"></script>
+</head>
+
+
+<body>
+    <center>
+        <div>
+            <p class="btn btn-info serviceHeader" style="font-size: 25px;">You register with us and we have a regular
+                maintainance check on your
+                apartment.
+                <button id="logout" class="btn btn-danger" style="float:right">Logout</button>
+            </p>
+            <img src="Property-Maintenance.jpeg" style="height:230px ; width:100%">
+        </div>
+
+
+        <div id="container">
+
+            <div id="title_container">
+                <span id="content">
+                    <h2 class="typedtext"></h2>
+                </span>
+                <h2 id="sub_header"> Register With us for the service</h2>
+            </div>
+            <br>
+            <div id="form_container">
+                <input placeholder="Name of the Apt" type="text" id="name_of_apt" required />
+                <input placeholder="Email" type="text" id="email" required />
+                <input placeholder="Need a Check for Every(in months)?" type="text" id="check" required />
+            </div>
+
+            <div id="button_container">
+                <button id="submit" class="btn btn-primary"> SUBMIT </button>
+            </div>
+
+        </div>
+
+
+        <div id="container">
+
+            <div id="title_container">
+                <span id="content">
+                    <h2 class="typedtext"></h2>
+                </span>
+                <h2 id="sub_header"> Registered Apartments</h2>
+
+            </div>
+            <br>
+            <div class="form-group " align="center">
+                <label>Search</label>
+                <input type="text" name="search" id="search" class="form-control" placeholder="Type here">
+            </div>
+            <input type="submit" value="Show Users" id="showUsers"
+                style="background-color: rgb(5, 103, 173); border-radius: 5px;"></input>
+            <div class="form_container table_div">
+                <table class="table table-striped" id="dataTbl">
+                    <thead>
+                    <tbody>
+                        <tr>
+                            <th scope="col"> No.</th>
+                            <th scope="col"> Apt Name</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">Period(in months)</th>
+                            <th scope="col"></th>
+                        </tr>
+                    </tbody>
+                    </thead>
+                </table>
+            </div>
+        </div>
+
+    </center>
+</body>
+
+<script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.9.3/firebase-app.js";
+    import { getDatabase, set, ref, update, push, child, onValue } from "https://www.gstatic.com/firebasejs/9.9.3/firebase-database.js";
+    import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/9.9.3/firebase-auth.js";
+    // TODO: Add SDKs for Firebase products that you want to use
+    // https://firebase.google.com/docs/web/setup#available-libraries
+
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyByzUT0x6GNkCD9ESwBpFixcqTZR3-ugAQ",
+        authDomain: "apt-services-525c7.firebaseapp.com",
+        databaseURL: "https://apt-services-525c7-default-rtdb.firebaseio.com",
+        projectId: "apt-services-525c7",
+        storageBucket: "apt-services-525c7.appspot.com",
+        messagingSenderId: "738290879254",
+        appId: "1:738290879254:web:af09cb88c4feec4ecc1e37"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
+    const auth = getAuth();
+
+
+    logout.addEventListener('click', (e) => {
+
+        signOut(auth).then(() => {
+            // Sign-out successful.
+            alert('You have been successfully logged out');
+            window.location = "index.html";
+        }).catch((error) => {
+            // An error happened.
+            const errorCode = error.code;
+            const errorMessage = error.message;
+
+            alert(errorMessage);
+        });
+
+    });
+
+    submit.addEventListener('click', (e) => {
+
+
+        var email = document.getElementById('email').value;
+        var name_of_apt = document.getElementById('name_of_apt').value;
+        var check = document.getElementById('check').value;
+        if (email != "" && name_of_apt != "" && check != "") {
+            var atposition = email.indexOf("@");
+            var dotposition = email.lastIndexOf(".");
+            if (atposition < 1 || dotposition < atposition + 2 || dotposition + 2 >= email.length) {
+                alert("Please enter a valid email id");
+            }
+            else {
+                const userId = push(child(ref(database), 'users')).key;
+                set(ref(database, 'nameOfApt/' + name_of_apt), {
+                    email: email,
+                    name_of_apt: name_of_apt,
+                    check: check
+
+                });
+
+                alert(' Information Saved!! Scroll down to view the registered users!');
+                $('#dataTbl td').remove();
+                var rowNum = 0;
+                const dbRef = ref(database, 'nameOfApt/');
+
+                onValue(dbRef, (snapshot) => {
+                    snapshot.forEach((childSnapshot) => {
+                        const childKey = childSnapshot.key;
+                        const childData = childSnapshot.val();
+                        // ...
+                        rowNum += 1;
+
+                        var delete_button = "<button id=" + childKey + " onclick='delete_record(this.id)' style='background-color:#DC143C; color:white; border-radius:10px'>Delete</button>";
+                        var row = "<tr><td>" + rowNum + "</td><td>" + childData.name_of_apt + "</td><td>" + childData.email + "</td><td>" + childData.check + "</td><td>" + delete_button + "</td></tr>";
+
+                        $(row).appendTo('#dataTbl');
+
+                        document.getElementById('email').value = "";
+                        document.getElementById('name_of_apt').value = "";
+                        document.getElementById('check').value = "";
+
+                    });
+                }, {
+                    onlyOnce: true
+                });
+            }
+        }
+        else {
+            alert("Please fill all the fields for registration");
+        }
+
+
+
+    });
+
+    showUsers.addEventListener('click', (e) => {
+
+        var rowNum = 0;
+        $('#dataTbl td').remove();
+        const dbRef = ref(database, 'nameOfApt/');
+
+        onValue(dbRef, (snapshot) => {
+            if (!snapshot.exists()) {
+
+                alert("No Records at the moment");
+
+            }
+            else {
+                console.log("records");
+                snapshot.forEach((childSnapshot) => {
+                    const childKey = childSnapshot.key;
+                    const childData = childSnapshot.val();
+                    // ...
+                    rowNum += 1;
+                    var delete_button = "<button id=" + childKey + " onclick='delete_record(this.id)' style='background-color:#DC143C; color:white; border-radius:10px'>Delete</button>";
+                    var row = "<tr><td>" + rowNum + "</td><td>" + childData.name_of_apt + "</td><td>" + childData.email + "</td><td>" + childData.check + "</td><td>" + delete_button + "</td></tr>";
+
+                    $(row).appendTo('#dataTbl');
+                    //window.location.reload();
+
+                });
+            }
+        }, {
+            onlyOnce: true
+        });
+
+
+    });
+
+
+
+    $(document).ready(function () {
+        $('#search').keyup(function () {
+            search_table($(this).val());
+        });
+        function search_table(value) {
+            $('#dataTbl tr').each(function () {
+                var found = 'false';
+                $(this).each(function () {
+                    if ($(this).text().toLowerCase().indexOf(value.toLowerCase()) >= 0) {
+                        found = 'true';
+                    }
+                });
+                if (found == 'true') {
+                    $(this).show();
+                }
+                else {
+                    $(this).hide();
+
+                }
+            });
+        }
+    });
+
+</script>
+<script src="service.js"></script>
+
+</html>
